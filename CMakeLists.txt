@@ -6,14 +6,16 @@ set(CMAKE_CXX_STANDARD 23)
 add_library(MatrixLib STATIC
         "include/3_Datastructures/SparseMatrix.h"
         "src/SparseMatrix.cpp"
-
 )
 
 target_include_directories(MatrixLib PRIVATE "include/")
 
 # Add the executable
 add_executable(TestSuite
-        "test/SparseMatrix.cpp"
+        "test/TestSparseMatrix.cpp"
+        "include/3_Datastructures/SparseMatrix.h"
+        test/main.cpp
+        # Include the header files
 )
 
 target_include_directories(TestSuite PRIVATE "include/")
@@ -27,7 +29,3 @@ add_compile_options(
         -Wpedantic
         -Werror
 )
-
-# Alternatively, if you want to set flags for a specific configuration (e.g., Release or Debug)
-# set(CMAKE_CXX_FLAGS_RELEASE " -flag3 -flag4" CACHE STRING "" FORCE)
-# set(CMAKE_CXX_FLAGS_DEBUG "-flag5 -flag6" CACHE STRING " " FORCE)

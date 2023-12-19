@@ -81,8 +81,15 @@ build libMatrixLib.a: CXX_STATIC_LIBRARY_LINKER__MatrixLib_Debug CMakeFiles/Matr
 
 build cmake_object_order_depends_target_TestSuite: phony || cmake_object_order_depends_target_MatrixLib
 
-build CMakeFiles/TestSuite.dir/test/SparseMatrix.cpp.obj: CXX_COMPILER__TestSuite_unscanned_Debug D$:/Universiteit$ Antwerpen/Data$ Structures/Practicum/3-Datastructures/test/SparseMatrix.cpp || cmake_object_order_depends_target_TestSuite
-  DEP_FILE = CMakeFiles\TestSuite.dir\test\SparseMatrix.cpp.obj.d
+build CMakeFiles/TestSuite.dir/test/TestSparseMatrix.cpp.obj: CXX_COMPILER__TestSuite_unscanned_Debug D$:/Universiteit$ Antwerpen/Data$ Structures/Practicum/3-Datastructures/test/TestSparseMatrix.cpp || cmake_object_order_depends_target_TestSuite
+  DEP_FILE = CMakeFiles\TestSuite.dir\test\TestSparseMatrix.cpp.obj.d
+  FLAGS = -g -std=gnu++23 -fdiagnostics-color=always
+  INCLUDES = -I"D:/Universiteit Antwerpen/Data Structures/Practicum/3-Datastructures/include"
+  OBJECT_DIR = CMakeFiles\TestSuite.dir
+  OBJECT_FILE_DIR = CMakeFiles\TestSuite.dir\test
+
+build CMakeFiles/TestSuite.dir/test/main.cpp.obj: CXX_COMPILER__TestSuite_unscanned_Debug D$:/Universiteit$ Antwerpen/Data$ Structures/Practicum/3-Datastructures/test/main.cpp || cmake_object_order_depends_target_TestSuite
+  DEP_FILE = CMakeFiles\TestSuite.dir\test\main.cpp.obj.d
   FLAGS = -g -std=gnu++23 -fdiagnostics-color=always
   INCLUDES = -I"D:/Universiteit Antwerpen/Data Structures/Practicum/3-Datastructures/include"
   OBJECT_DIR = CMakeFiles\TestSuite.dir
@@ -96,7 +103,7 @@ build CMakeFiles/TestSuite.dir/test/SparseMatrix.cpp.obj: CXX_COMPILER__TestSuit
 #############################################
 # Link the executable TestSuite.exe
 
-build TestSuite.exe: CXX_EXECUTABLE_LINKER__TestSuite_Debug CMakeFiles/TestSuite.dir/test/SparseMatrix.cpp.obj | libMatrixLib.a || libMatrixLib.a
+build TestSuite.exe: CXX_EXECUTABLE_LINKER__TestSuite_Debug CMakeFiles/TestSuite.dir/test/TestSparseMatrix.cpp.obj CMakeFiles/TestSuite.dir/test/main.cpp.obj | libMatrixLib.a || libMatrixLib.a
   FLAGS = -g
   LINK_LIBRARIES = libMatrixLib.a  -lkernel32 -luser32 -lgdi32 -lwinspool -lshell32 -lole32 -loleaut32 -luuid -lcomdlg32 -ladvapi32
   OBJECT_DIR = CMakeFiles\TestSuite.dir
