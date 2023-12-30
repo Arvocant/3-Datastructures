@@ -198,7 +198,7 @@ namespace SparseMatrix{
 
         return result;
     }
-    
+
     template<typename T>
     SparseMatrix<T> SparseMatrix<T>::subtract(const SparseMatrix<T> & m) const
     {

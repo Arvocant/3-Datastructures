@@ -173,5 +173,76 @@ TEST_CASE("SparseMatrix Add 2x3 Matrices", "[SparseMatrix][Add]") {
     REQUIRE(result.get(2, 3) == 107);
 }
 
+// Test case for SparseMatrix subtraction with a 2x7 rectangular matrix
+TEST_CASE("SparseMatrix Subtract Rectangular Matrices", "[SparseMatrix][Subtract]") {
+    // Create two SparseMatrices of the same size
+    SparseMatrix::SparseMatrix<int> matrixA(2, 7);
+    SparseMatrix::SparseMatrix<int> matrixB(2, 7);
 
+    std::cout << " Start of subtraction 2x7 matrix " << std::endl;
 
+    // Set values for matrixA
+    matrixA.set(1, 1, 1);
+    matrixA.set(2, 1, 2);
+    matrixA.set(3, 1, 3);
+    matrixA.set(4, 1, 4);
+    matrixA.set(5, 1, 5);
+    matrixA.set(6, 1, 6);
+    matrixA.set(7, 1, 7);
+    matrixA.set(8, 2, 1);
+    matrixA.set(9, 2, 2);
+    matrixA.set(10, 2, 3);
+    matrixA.set(11, 2, 4);
+    matrixA.set(12, 2, 5);
+    matrixA.set(13, 2, 6);
+    matrixA.set(14, 2, 7);
+
+    matrixA.print();
+
+    // Set values for matrixB
+    matrixB.set(14, 1, 1);
+    matrixB.set(13, 1, 2);
+    matrixB.set(12, 1, 3);
+    matrixB.set(11, 1, 4);
+    matrixB.set(10, 1, 5);
+    matrixB.set(9, 1, 6);
+    matrixB.set(8, 1, 7);
+    matrixB.set(7, 2, 1);
+    matrixB.set(6, 2, 2);
+    matrixB.set(5, 2, 3);
+    matrixB.set(4, 2, 4);
+    matrixB.set(3, 2, 5);
+    matrixB.set(2, 2, 6);
+    matrixB.set(1, 2, 7);
+
+    matrixB.print();
+
+    // Perform subtraction
+    SparseMatrix::SparseMatrix<int> result = matrixA.subtract(matrixB);
+
+    std::cout << " Result: " << std::endl;
+
+    result.print();
+
+    std::cout << " End of addition test" << std::endl;
+
+    // Check the result matrix dimensions
+    REQUIRE(result.getRowCount() == 2);
+    REQUIRE(result.getColumnCount() == 7);
+
+    // Check specific elements in the result matrix
+    REQUIRE(result.get(1, 1) == -13);
+    REQUIRE(result.get(1, 2) == -11);
+    REQUIRE(result.get(1, 3) == -9);
+    REQUIRE(result.get(1, 4) == -7);
+    REQUIRE(result.get(1, 5) == -5);
+    REQUIRE(result.get(1, 6) == -3);
+    REQUIRE(result.get(1, 7) == -1);
+    REQUIRE(result.get(2, 1) == 1);
+    REQUIRE(result.get(2, 2) == 3);
+    REQUIRE(result.get(2, 3) == 5);
+    REQUIRE(result.get(2, 4) == 7);
+    REQUIRE(result.get(2, 5) == 9);
+    REQUIRE(result.get(2, 6) == 11);
+    REQUIRE(result.get(2, 7) == 13);
+}

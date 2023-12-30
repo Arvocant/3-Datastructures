@@ -48,3 +48,7 @@
 5	863	7256511590568148	CMakeFiles/MatrixLib.dir/src/SparseMatrix.cpp.obj	b2a9df2026359a36
 863	979	7256511591729031	libMatrixLib.a	2d773c1ffc2ba29e
 979	25945	7256511841271840	TestSuite.exe	d3768b84e9d32a2c
+5	1198	7256520167531930	CMakeFiles/MatrixLib.dir/src/SparseMatrix.cpp.obj	b2a9df2026359a36
+1198	1316	7256520168789340	libMatrixLib.a	2d773c1ffc2ba29e
+12	2342	7256520179017129	CMakeFiles/TestSuite.dir/test/TestSparseMatrix.cpp.obj	a541ceb011697396
+2342	27051	7256520426010992	TestSuite.exe	d3768b84e9d32a2c
