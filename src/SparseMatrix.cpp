@@ -52,7 +52,7 @@ namespace SparseMatrix{
     //Values
     template<typename T>
     T SparseMatrix<T>::get(size_t row, size_t column) const {
-        std::cout << "Entering get(" << row << ", " << column << ")\n";
+        //std::cout << "Entering get(" << row << ", " << column << ")\n";
 
         if (row < 1 || column < 1 )
             return 0;
@@ -69,24 +69,20 @@ namespace SparseMatrix{
                 break;
             }
         }
-        std::cout << "Exiting get"  << "\n";
+        //std::cout << "Exiting get"  << "\n";
         return T(); //Default construct if nothing was found
     }
 
     template<typename T>
     SparseMatrix<T> &SparseMatrix<T>::set(T val, size_t row, size_t column) {
-        std::cout << "Entering set(" << val << ", " << row << ", " << column << ")\n";
+        //std::cout << "Entering set(" << val << ", " << row << ", " << column << ")\n";
 
-
+        //Check if coordinates are OK
         if (row < 1 || column < 1)
             throw std::out_of_range("Size can't be smaller than 1");
 
-        //size_t position = this->rows - 1;
 
-//        size_t start = 0;
-//        size_t end = 0;
         size_t currentColumn = 0;
-//        size_t currPos = 0;
         size_t pos = (*(this->rows))[row - 1] - 1;
 
         for (; pos < (*(this->rows))[row] - 1; pos++) {
@@ -96,19 +92,6 @@ namespace SparseMatrix{
                 break;
             }
         }
-
-//        for (size_t i = 0; i < row; i++) {
-//            start = end;
-//            end = this->rows[i];
-//
-//            for (size_t pos = start; pos < end; pos++) {
-//                currentColumn = this->columns[pos];
-//                currPos = pos;
-//
-//                if (currentColumn >= column)
-//                    break;
-//            }
-//        }
 
         if (currentColumn != column){
             if (val != T())
@@ -121,7 +104,7 @@ namespace SparseMatrix{
             (*(this->values))[pos] = val;
         }
 
-        std::cout << "Exiting set\n";
+        //std::cout << "Exiting set\n";
         return *this; //Return a reference to the object, NOT the pointer
     }
 
@@ -140,14 +123,16 @@ namespace SparseMatrix{
     //Insert & Remove a value
     template<typename T>
     void SparseMatrix<T>::insert(size_t index, size_t row, size_t column, T val) {
-        // Ensure the index is within bounds
-        if (index < 0 || index > this->values->size()) {
-            throw std::out_of_range("Index out of bounds");
-        }
 
-        // Inserting at the specified index
-        values->insert(values->begin() + index, val);
-        columns->insert(columns->begin() + index, column);
+        // Ensure the index is within bounds
+        if (this->values == NULL) {
+            values = new std::vector<T>(1, val);
+            columns = new std::vector<size_t>(1, column);
+        }else{
+            // Inserting at the specified index
+            values->insert(values->begin() + index, val);
+            columns->insert(columns->begin() + index, column);
+        }
 
         // Update the row pointers if necessary
         for (size_t i = row; i <= this->m; i++) {
@@ -167,30 +152,28 @@ namespace SparseMatrix{
     }
 
     ///Math functions
-
     template<typename T>
-    SparseMatrix<T> SparseMatrix<T>::multiply(const SparseMatrix<T> &m) const {
-        if (this->n != m.getRowCount() ){
+    SparseMatrix<T> SparseMatrix<T>::multiply(const SparseMatrix<T> &matrixToMultiply) const {
+        if (this->n != matrixToMultiply.getRowCount()) {
             std::cerr << "Dimensions don't match. Left column and right row don't match size" << std::endl;
             throw std::runtime_error("Type mismatch");
         }
 
-        SparseMatrix<T> result(this->m, T());
+        SparseMatrix<T> result(this->m, matrixToMultiply.n); //Resulting matrix
 
-        if(!this->values){ //If there are no values there is nothing to multiply
-           throw std::runtime_error("There are no values");
+        if (!values) { // If there are no values, there is nothing to multiply
+            throw std::runtime_error("There are no values");
         }
 
-        for (int row = 0; row < this->m; row++) { //rows
-            for (int column = 0; column < m.getColumnCount(); column++) { //columns
-                T product = T(); //new SparseMatrix for the product
+        for (size_t resultRow = 1; resultRow <= this->m; ++resultRow) { //Iterate over the rows
+            for (size_t resultCol = 1; resultCol <= matrixToMultiply.n; ++resultCol) { //Iterate over the columns
+                T product = T(); // Initialize product
 
-                //Calculate the product of the 'i' row 1st matrix and the 'j' column of the 2nd
-                for (int k = 0; k < this->n; k++) {
-                    product = product + this->get(row,k) * m.get(k, column);
+                for (size_t Dimensions = 1; Dimensions <= this->n; ++Dimensions) { //Dimensions  = (number of columns in the first matrix and rows in the second matrix)
+                    product += this->get(resultRow, Dimensions) * matrixToMultiply.get(Dimensions, resultCol);
                 }
 
-                result.set(product, row, column);
+                result.set(product, resultRow, resultCol); //Set product values in result
             }
         }
 
@@ -198,22 +181,24 @@ namespace SparseMatrix{
     }
 
     template<typename T>
-    SparseMatrix<T> SparseMatrix<T>::add(const SparseMatrix<T> &m) const {
-        if (this->m != m.getRowCount() || this->n != m.getColumnCount()){
-            std::cerr << "Dimensions don't match. Matrix sizes must be the same." << std::endl;
-            throw std::runtime_error("Type mismatch");
+    SparseMatrix<T> SparseMatrix<T>::add(const SparseMatrix<T> &matrix) const {
+        if (m != matrix.getRowCount() || n != matrix.getColumnCount()) {
+            std::cerr << "Error: Matrices must have the same dimensions for addition." << std::endl;
+            throw std::runtime_error("Dimension mismatch");
         }
 
-        SparseMatrix<T> result(this->m, this->n);
+        SparseMatrix<T> result(m, n);
 
-        for (int i = 0; i < this->m; ++i) {
-            for (int j = 0; j < this->n; ++j) {
-                result.set((this->get(i,j) + m.get(i,j)), i ,j);
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                T sum = get(i, j) + matrix.get(i, j);
+                result.set(sum, i, j);
             }
         }
+
         return result;
     }
-
+    
     template<typename T>
     SparseMatrix<T> SparseMatrix<T>::subtract(const SparseMatrix<T> & m) const
     {
@@ -282,6 +267,44 @@ namespace SparseMatrix{
         return outputStream;
     }
 
+    template<typename T>
+    void SparseMatrix<T>::print() const {
+        const char horizontalBorderChar = '=';
+        const char verticalBorderChar = '#';
+        const size_t cellWidth = 8;  // Adjust cell width based on your preference
+
+        // Print the top border
+        std::cout << verticalBorderChar << std::string(n * (cellWidth + 1), horizontalBorderChar) << verticalBorderChar << '\n';
+
+        // Print the matrix content
+        for (size_t i = 1; i <= m; ++i) {
+            std::cout << verticalBorderChar;
+
+            for (size_t j = 1; j <= n; ++j) {
+                T value = get(i, j);
+                size_t valueWidth = std::to_string(value).length();
+
+                // Print cell value centered within the cell
+                size_t paddingBefore = (cellWidth - valueWidth) / 2;
+                size_t paddingAfter = cellWidth - valueWidth - paddingBefore;
+
+                std::cout << std::string(paddingBefore, ' ') << value << std::string(paddingAfter, ' ');
+
+                // Print vertical border between cells
+                if (j < n) {
+                    std::cout << verticalBorderChar;
+                }
+            }
+
+            std::cout << '\n';
+        }
+
+        // Print the bottom border
+        std::cout << verticalBorderChar << std::string(n * (cellWidth + 1), horizontalBorderChar) << verticalBorderChar << '\n';
+    }
+
+    template
+    void SparseMatrix<int>::print() const;
 
     template
     SparseMatrix<int>::SparseMatrix(size_t n);

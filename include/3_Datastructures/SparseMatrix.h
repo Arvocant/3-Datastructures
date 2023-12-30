@@ -62,9 +62,7 @@ namespace SparseMatrix{
             SparseMatrix<T> add(const SparseMatrix<T> & m) const;
             SparseMatrix<T> subtract(const SparseMatrix<T> & m) const;
 
-
-
-
+            void print() const;
 
         // TODO: You should decide the return type of this method.
         auto begin();
