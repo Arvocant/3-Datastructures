@@ -1,30 +1,30 @@
 //
 // Created by canta on 22/11/2023.
 //
-#include "3_Datastructures/SparseMatrix.h"
+#include "3_Datastructures/sparseMatrix.h"
 
-namespace SparseMatrix{
+namespace ProjectSparseMatrix{
 
     ///Initializing a new sparseMatrix
     template<typename T>
-    SparseMatrix<T>::SparseMatrix(size_t n)
+    sparseMatrix<T>::sparseMatrix(size_t n)
     {
         this->construct(n,n);
     }
 
     template<typename T>
-    SparseMatrix<T>::SparseMatrix(size_t rows, size_t columns)
+    sparseMatrix<T>::sparseMatrix(size_t rows, size_t columns)
     {
         this->construct(rows, columns);
     }
 
     template<typename T>
-    SparseMatrix<T>::SparseMatrix(){
+    sparseMatrix<T>::sparseMatrix(){
         this->destruct();
     }
 
     template<typename T>
-    void SparseMatrix<T>::construct(size_t row, size_t column){
+    void sparseMatrix<T>::construct(size_t row, size_t column){
 
         //Check if rows and columns are empty
         if (row < 1 || column < 1)
@@ -34,24 +34,24 @@ namespace SparseMatrix{
         this->n = column;
 
         //Init new Matrix row
-        this->values = NULL;
-
-        this->rows = new std::vector<size_t>(row+1, 1);
-        this->columns = NULL;
+        values = NULL;
+        rows = new std::vector<size_t>(row+1, 1);
+        columns = NULL;
     }
 
     template<typename T>
-    void SparseMatrix<T>::destruct() {
+    void sparseMatrix<T>::destruct() {
         if (values->empty() == true){ //Check if values are empty
-            delete this->values;
-            delete this->columns;
+            delete values;
         }
-        delete this->rows;
+        //Also delete columns and rows
+        delete columns;
+        delete rows;
     }
 
     //Values
     template<typename T>
-    T SparseMatrix<T>::get(size_t row, size_t column) const {
+    T sparseMatrix<T>::get(size_t row, size_t column) const {
         //std::cout << "Entering get(" << row << ", " << column << ")\n";
 
         if (row < 1 || column < 1 )
@@ -59,11 +59,11 @@ namespace SparseMatrix{
 
         int currCol;
 
-        for (int pos = (*(this->rows))[row - 1] - 1; pos < (*(this->rows))[row] - 1; ++pos) {
-            currCol = (*(this->columns))[pos];
+        for (int pos = (*(rows))[row - 1] - 1; pos < (*(rows))[row] - 1; ++pos) {
+            currCol = (*(columns))[pos];
 
             if (currCol == column) {
-                return (*(this->values))[pos];
+                return (*(values))[pos];
 
             } else if (currCol > column) {
                 break;
@@ -74,34 +74,39 @@ namespace SparseMatrix{
     }
 
     template<typename T>
-    SparseMatrix<T> &SparseMatrix<T>::set(T val, size_t row, size_t column) {
+    sparseMatrix<T> &sparseMatrix<T>::set(T val, size_t row, size_t column) {
         //std::cout << "Entering set(" << val << ", " << row << ", " << column << ")\n";
 
         //Check if coordinates are OK
         if (row < 1 || column < 1)
             throw std::out_of_range("Size can't be smaller than 1");
 
-
+        size_t position = (*(this->rows))[row - 1] - 1;
         size_t currentColumn = 0;
-        size_t pos = (*(this->rows))[row - 1] - 1;
 
-        for (; pos < (*(this->rows))[row] - 1; pos++) {
-            currentColumn = (*(this->columns))[pos];
+        for (position; position < (*(this->rows))[row] - 1; position++) {
+            currentColumn = (*(this->columns))[position];
 
             if (currentColumn >= column) {
                 break;
             }
         }
 
-        if (currentColumn != column){
-            if (val != T())
-                this->insert(pos, row, column, val);
-        }
-        else if (val == T()) {
-            this->remove(pos, row);
-        }
-        else {
-            (*(this->values))[pos] = val;
+        // Check if the column already exists
+        if (currentColumn != column) {
+            // Insert new value if != 0
+            if (val != T()) {
+                this->insert(position, row, column, val);
+            }
+        } else {
+            // Check if new value == 0
+            if (val == T()) {
+                // Remove
+                this->remove(position, row);
+            } else {
+                // Update the existing value in the header class with the non-zero value
+                (*(this->values))[position] = val;
+            }
         }
 
         //std::cout << "Exiting set\n";
@@ -111,41 +116,41 @@ namespace SparseMatrix{
 
     //Getter&Setter
     template<typename T>
-    size_t SparseMatrix<T>::getRowCount() const {
+    size_t sparseMatrix<T>::rowCount() const {
         return this->m;
     }
 
     template<typename T>
-    size_t SparseMatrix<T>::getColumnCount() const {
+    size_t sparseMatrix<T>::columnCount() const {
         return this->n;
     }
 
     //Insert & Remove a value
     template<typename T>
-    void SparseMatrix<T>::insert(size_t index, size_t row, size_t column, T val) {
+    void sparseMatrix<T>::insert(size_t index, size_t row, size_t column, T val) {
 
-        // Ensure the index is within bounds
+        // valid index?
         if (this->values == NULL) {
             values = new std::vector<T>(1, val);
             columns = new std::vector<size_t>(1, column);
         }else{
-            // Inserting at the specified index
+            // Inserting at parameter's index
             values->insert(values->begin() + index, val);
             columns->insert(columns->begin() + index, column);
         }
 
-        // Update the row pointers if necessary
+        // Update row pointers on row change
         for (size_t i = row; i <= this->m; i++) {
-            (*(this->rows))[i] += 1; // Increment row pointers after the insertion point
+            (*(this->rows))[i] += 1; // Increment row pointers
         }
     }
 
     template<typename T>
-    void SparseMatrix<T>::remove(size_t index, size_t row) {
+    void sparseMatrix<T>::remove(size_t index, size_t row) {
         values->erase(this->values->begin() + index);
         columns->erase(this->columns->begin() + index);
 
-        // Update the row pointers
+        // row pointers again
         for (size_t i = row; i < this->m; i++) {
             (*(this->rows))[i] -= 1; // Decrement row pointers after the remove
         }
@@ -153,27 +158,27 @@ namespace SparseMatrix{
 
     ///Math functions
     template<typename T>
-    SparseMatrix<T> SparseMatrix<T>::multiply(const SparseMatrix<T> &matrixToMultiply) const {
-        if (this->n != matrixToMultiply.getRowCount()) {
+    sparseMatrix<T> sparseMatrix<T>::multiply(const sparseMatrix<T> &matrixToMultiply) const {
+        if (this->n != matrixToMultiply.rowCount()) {
             std::cerr << "Dimensions don't match. Left column and right row don't match size" << std::endl;
             throw std::runtime_error("Type mismatch");
         }
 
-        SparseMatrix<T> result(this->m, matrixToMultiply.n); //Resulting matrix
+        sparseMatrix<T> result(this->m, matrixToMultiply.n); //Resulting matrix
 
-        if (!values) { // If there are no values, there is nothing to multiply
+        if (!values) { // Check if values aren't empty, if empty --> there is nothing to multiply
             throw std::runtime_error("There are no values");
         }
 
-        for (size_t resultRow = 1; resultRow <= this->m; ++resultRow) { //Iterate over the rows
-            for (size_t resultCol = 1; resultCol <= matrixToMultiply.n; ++resultCol) { //Iterate over the columns
+        for (size_t resultRow = 1; resultRow <= this->m; ++resultRow) { //Go over the rows
+            for (size_t resultCol = 1; resultCol <= matrixToMultiply.n; ++resultCol) { //Go over the columns
                 T product = T(); // Initialize product
 
                 for (size_t Dimensions = 1; Dimensions <= this->n; ++Dimensions) { //Dimensions  = (number of columns in the first matrix and rows in the second matrix)
                     product += this->get(resultRow, Dimensions) * matrixToMultiply.get(Dimensions, resultCol);
                 }
 
-                result.set(product, resultRow, resultCol); //Set product values in result
+                result.set(product, resultRow, resultCol); //Set values of the resulting product to result
             }
         }
 
@@ -181,53 +186,48 @@ namespace SparseMatrix{
     }
 
     template<typename T>
-    SparseMatrix<T> SparseMatrix<T>::add(const SparseMatrix<T> &matrix) const {
-        if (m != matrix.getRowCount() || n != matrix.getColumnCount()) {
-            std::cerr << "Error: Matrices must have the same dimensions for addition." << std::endl;
+    sparseMatrix<T> sparseMatrix<T>::add(const sparseMatrix<T> &matrix) const {
+        if (m != matrix.rowCount() || n != matrix.columnCount()) {
+            std::cerr << "Matrices must have the same dimensions for addition." << std::endl;
             throw std::runtime_error("Dimension mismatch");
         }
-
-        SparseMatrix<T> result(m, n);
-
+        sparseMatrix<T> result(m, n);
         for (int i = 1; i <= m; i++) {
             for (int j = 1; j <= n; j++) {
                 T sum = get(i, j) + matrix.get(i, j);
                 result.set(sum, i, j);
             }
         }
-
         return result;
     }
 
     template<typename T>
-    SparseMatrix<T> SparseMatrix<T>::subtract(const SparseMatrix<T> & m) const
+    sparseMatrix<T> sparseMatrix<T>::subtract(const sparseMatrix<T> & m) const
     {
-        if (this->m != m.getRowCount() || this->n != m.getColumnCount()) {
+        if (this->m != m.rowCount() || this->n != m.columnCount()) {
             std::cerr << "Dimensions don't match. Matrix sizes must be the same." << std::endl;
         }
 
-        SparseMatrix<T> result(this->m, this->n);
+        sparseMatrix<T> result(this->m, this->n);
 
         for (int i = 1; i <= this->m; i++) {
             for (int j = 1; j <= this->n; j++) {
                 result.set((this->get(i, j) - m.get(i, j)), i, j);
             }
         }
-
         return result;
     }
 
-    //Friend functions
+    ///Friend functions
     template<typename U>
-    bool operator==(const SparseMatrix<U> &valA, const SparseMatrix<U> &valB) {
-
+    bool operator==(const sparseMatrix<U> &valA, const sparseMatrix<U> &valB) {
         bool valuesEqual;
         if (valA.values == nullptr && valB.values == nullptr)
             valuesEqual = true;
         else if (valA.values != nullptr && valB.values)
             valuesEqual = std::equal(valA.values->begin(), valA.values->end(), valB.values->begin());
 
-        // Check if both matrices have either NULL columns or non-NULL columns that are equal
+        // Check if both matrices have either NULL columns or columns with a value that are equal
         bool columnsEqual;
         if (valA.columns == nullptr && valB.columns == nullptr) {
             columnsEqual = true;
@@ -244,34 +244,15 @@ namespace SparseMatrix{
     }
 
     template<typename U>
-    bool operator!=(const SparseMatrix<U> &valA, const SparseMatrix<U> &valB) {
+    bool operator!=(const sparseMatrix<U> &valA, const sparseMatrix<U> &valB) {
         return !(valA == valB);
     }
 
-    template<typename U>
-    std::ostream &operator<<(const SparseMatrix<U> &outputStream, const SparseMatrix<U> &matrix) {
-        for (size_t i = 0; i < matrix.getRowCount(); ++i) {
-            for (size_t j = 0; j < matrix.getColumnCount(); ++j) {
-                if (j != 0) {
-                    outputStream << ' ';
-                }
-
-                outputStream << matrix.get(i + 1, j + 1);
-            }
-
-            if (i < matrix.getRowCount() - 1) {
-                outputStream << '\n';
-            }
-        }
-
-        return outputStream;
-    }
-
     template<typename T>
-    void SparseMatrix<T>::print() const {
+    void sparseMatrix<T>::print() const {
         const char horizontalBorderChar = '=';
         const char verticalBorderChar = '#';
-        const size_t cellWidth = 8;  // Adjust cell width based on your preference
+        const size_t cellWidth = 8;
 
         // Print the top border
         std::cout << verticalBorderChar << std::string(n * (cellWidth + 1), horizontalBorderChar) << verticalBorderChar << '\n';
@@ -288,7 +269,10 @@ namespace SparseMatrix{
                 size_t paddingBefore = (cellWidth - valueWidth) / 2;
                 size_t paddingAfter = cellWidth - valueWidth - paddingBefore;
 
-                std::cout << std::string(paddingBefore, ' ') << value << std::string(paddingAfter, ' ');
+                if (!value)
+                    std::cout << std::string(paddingBefore, ' ') << "." << std::string(paddingAfter, ' ');
+                else
+                    std::cout << std::string(paddingBefore, ' ') << value << std::string(paddingAfter, ' ');
 
                 // Print vertical border between cells
                 if (j < n) {
@@ -304,58 +288,54 @@ namespace SparseMatrix{
     }
 
     template
-    void SparseMatrix<int>::print() const;
+    void sparseMatrix<int>::print() const;
 
     template
-    SparseMatrix<int>::SparseMatrix(size_t n);
+    sparseMatrix<int>::sparseMatrix(size_t n);
 
     template
-    SparseMatrix<int>::SparseMatrix(size_t rows, size_t columns);
+    sparseMatrix<int>::sparseMatrix(size_t rows, size_t columns);
 
     template
-    SparseMatrix<int>::SparseMatrix();
+    sparseMatrix<int>::sparseMatrix();
 
     template
-    void SparseMatrix<int>::construct(size_t row, size_t column);
+    void sparseMatrix<int>::construct(size_t row, size_t column);
 
     template
-    SparseMatrix<int> &SparseMatrix<int>::set(int val, size_t row, size_t column);
+    sparseMatrix<int> &sparseMatrix<int>::set(int val, size_t row, size_t column);
 
     //Getter&Setter
     template
-    size_t SparseMatrix<int>::getRowCount() const;
+    size_t sparseMatrix<int>::rowCount() const;
 
     template
-    size_t SparseMatrix<int>::getColumnCount() const;
+    size_t sparseMatrix<int>::columnCount() const;
 
     //Insert & Remove a value
     template
-    void SparseMatrix<int>::insert(size_t index, size_t row, size_t column, int val);
+    void sparseMatrix<int>::insert(size_t index, size_t row, size_t column, int val);
 
     template
-    void SparseMatrix<int>::remove(size_t index, size_t row);
+    void sparseMatrix<int>::remove(size_t index, size_t row);
 
     template
-    SparseMatrix<int> SparseMatrix<int>::multiply(const SparseMatrix<int> &m) const;
+    sparseMatrix<int> sparseMatrix<int>::multiply(const sparseMatrix<int> &m) const;
 
     template
-    SparseMatrix<int> SparseMatrix<int>::add(const SparseMatrix<int> &m) const;
+    sparseMatrix<int> sparseMatrix<int>::add(const sparseMatrix<int> &m) const;
 
     template
-    SparseMatrix<int> SparseMatrix<int>::subtract(const SparseMatrix<int> & m) const;
+    sparseMatrix<int> sparseMatrix<int>::subtract(const sparseMatrix<int> & m) const;
 
     template
-    bool operator==(const SparseMatrix<int> &valA, const SparseMatrix<int> &valB);
+    bool operator==(const sparseMatrix<int> &valA, const sparseMatrix<int> &valB);
 
     template
-    bool operator!=(const SparseMatrix<int> &valA, const SparseMatrix<int> &valB);
-
-    //template
-    //std::ostream &operator<<(const SparseMatrix<int> &outputStream, const SparseMatrix<int> &matrix);
+    bool operator!=(const sparseMatrix<int> &valA, const sparseMatrix<int> &valB);
 }
 
 int rows[] = {};
 int columns[] = {};
 
 int results[] = {};
-

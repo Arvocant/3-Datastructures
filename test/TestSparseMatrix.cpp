@@ -2,47 +2,61 @@
 // Created by canta on 22/11/2023.
 //
 #include <catch2/catch.h>
-#include "3_Datastructures/SparseMatrix.h"
+#include "3_Datastructures/sparseMatrix.h"
 #include <string>
 #include <vector>
 #include <iostream>
 
-TEST_CASE("SparseMatrix Constructor Test", "[SparseMatrix][Constructor]") {
+TEST_CASE("ProjectSparseMatrix Constructor Test", "[ProjectSparseMatrix][Constructor]") {
 
     SECTION("Constructor n x n matrix, square") {
-        SparseMatrix::SparseMatrix<int> matrix(3); //Try different sorts of size_t's for a square
+        ProjectSparseMatrix::sparseMatrix<int> matrix(3); //Try different sorts of size_t's for a square
 
-        REQUIRE(matrix.getRowCount() == 3);
-        REQUIRE(matrix.getColumnCount() == 3);
+        REQUIRE(matrix.rowCount() == 3);
+        REQUIRE(matrix.columnCount() == 3);
 
     }
 
     SECTION("Constructor m x n matrix, rectangle") {
-        SparseMatrix::SparseMatrix<int> matrix(2, 4); //Try a rectangular sparse matrix
+        ProjectSparseMatrix::sparseMatrix<int> matrix(2, 4); //Try a rectangular sparse matrix
 
-        REQUIRE(matrix.getRowCount() == 2);
-        REQUIRE(matrix.getColumnCount() == 4);
+        REQUIRE(matrix.rowCount() == 2);
+        REQUIRE(matrix.columnCount() == 4);
+
+        std::cout << "Construct an empty 2x4 matrix" << std::endl;
+
+        matrix.print();
+
+        std::cout << "\n" << std::string(80, '-') << "\n";
     }
 }
 
-TEST_CASE("SparseMatrix Empty elements test", "[SparseMatrix]") {
-    SparseMatrix::SparseMatrix<int> matrix(3, 4);
+TEST_CASE("ProjectSparseMatrix Empty elements test", "[ProjectSparseMatrix]") {
+    ProjectSparseMatrix::sparseMatrix<int> matrix(3, 4);
     // Attempting to get an element from an uninitialized matrix should return 0
     REQUIRE(matrix.get(2, 2) == 0);
 }
 
-TEST_CASE("Set a value in the SparseMatrix", "[SparseMatrix]") {
-    SparseMatrix::SparseMatrix<int> matrix(2, 3);
+TEST_CASE("Set a value in the ProjectSparseMatrix", "[ProjectSparseMatrix]") {
+    ProjectSparseMatrix::sparseMatrix<int> matrix(2, 3);
+
+    std::cout << " Set a value to an empty matrix" << std::endl;
+
+    matrix.print();
+
+    std::cout << " Now we add a value " << std::endl;
+
     matrix.set(5, 1, 2);
 
     matrix.print();
 
     CHECK(matrix.get(1, 2) == 5);
+    std::cout << "\n" << std::string(80, '-') << "\n";
 }
 
-TEST_CASE("SparseMatrix Multiply 3x3 Matrices", "[SparseMatrix][Multiply]") {
-    SparseMatrix::SparseMatrix<int> matrixA(3, 3);
-    SparseMatrix::SparseMatrix<int> matrixB(3, 3);
+TEST_CASE("ProjectSparseMatrix Multiply 3x3 Matrices", "[ProjectSparseMatrix][Multiply]") {
+    ProjectSparseMatrix::sparseMatrix<int> matrixA(3, 3);
+    ProjectSparseMatrix::sparseMatrix<int> matrixB(3, 3);
 
     std::cout << " Start of multiplication of 2 [3x3] matrices" << std::endl;
 
@@ -72,7 +86,7 @@ TEST_CASE("SparseMatrix Multiply 3x3 Matrices", "[SparseMatrix][Multiply]") {
 
     matrixB.print();
 
-    SparseMatrix::SparseMatrix<int> result = matrixA.multiply(matrixB);
+    ProjectSparseMatrix::sparseMatrix<int> result = matrixA.multiply(matrixB);
 
     std::cout << " Result: " << std::endl;
 
@@ -81,8 +95,8 @@ TEST_CASE("SparseMatrix Multiply 3x3 Matrices", "[SparseMatrix][Multiply]") {
     std::cout << " End of multiplication test" << std::endl;
 
     // Check the result matrix dimensions
-    REQUIRE(result.getRowCount() == 3);
-    REQUIRE(result.getColumnCount() == 3);
+    REQUIRE(result.rowCount() == 3);
+    REQUIRE(result.columnCount() == 3);
 
     // Check specific elements in the result matrix
 
@@ -112,11 +126,12 @@ TEST_CASE("SparseMatrix Multiply 3x3 Matrices", "[SparseMatrix][Multiply]") {
 
     // (3, 3): 7*7 + 8*4 + 9*1 = 90
     REQUIRE(result.get(3, 3) == 90);
+    std::cout << "\n" << std::string(80, '-') << "\n";
 }
 
-TEST_CASE("SparseMatrix Add 2x3 Matrices", "[SparseMatrix][Add]") {
-    SparseMatrix::SparseMatrix<int> matrixA(2, 3);
-    SparseMatrix::SparseMatrix<int> matrixB(2, 3);
+TEST_CASE("ProjectSparseMatrix Add 2x3 Matrices", "[ProjectSparseMatrix][Add]") {
+    ProjectSparseMatrix::sparseMatrix<int> matrixA(2, 3);
+    ProjectSparseMatrix::sparseMatrix<int> matrixB(2, 3);
 
     std::cout << " Start of addition 2x3 matrix with 3x2 matrix " << std::endl;
 
@@ -140,7 +155,7 @@ TEST_CASE("SparseMatrix Add 2x3 Matrices", "[SparseMatrix][Add]") {
 
     matrixB.print();
 
-    SparseMatrix::SparseMatrix<int> result = matrixA.add(matrixB);
+    ProjectSparseMatrix::sparseMatrix<int> result = matrixA.add(matrixB);
 
     std::cout << " Result: " << std::endl;
 
@@ -149,8 +164,8 @@ TEST_CASE("SparseMatrix Add 2x3 Matrices", "[SparseMatrix][Add]") {
     std::cout << " End of addition test" << std::endl;
 
     // Check the result matrix dimensions
-    REQUIRE(result.getRowCount() == 2);
-    REQUIRE(result.getColumnCount() == 3);
+    REQUIRE(result.rowCount() == 2);
+    REQUIRE(result.columnCount() == 3);
 
     // Check specific elements in the result matrix
 
@@ -171,13 +186,14 @@ TEST_CASE("SparseMatrix Add 2x3 Matrices", "[SparseMatrix][Add]") {
 
     // (2, 3): 6 + 101 = 107
     REQUIRE(result.get(2, 3) == 107);
+    std::cout << "\n" << std::string(80, '-') << "\n";
 }
 
-// Test case for SparseMatrix subtraction with a 2x7 rectangular matrix
-TEST_CASE("SparseMatrix Subtract Rectangular Matrices", "[SparseMatrix][Subtract]") {
+// Test case for ProjectSparseMatrix subtraction with a 2x7 rectangular matrix
+TEST_CASE("ProjectSparseMatrix Subtract Rectangular Matrices", "[ProjectSparseMatrix][Subtract]") {
     // Create two SparseMatrices of the same size
-    SparseMatrix::SparseMatrix<int> matrixA(2, 7);
-    SparseMatrix::SparseMatrix<int> matrixB(2, 7);
+    ProjectSparseMatrix::sparseMatrix<int> matrixA(2, 7);
+    ProjectSparseMatrix::sparseMatrix<int> matrixB(2, 7);
 
     std::cout << " Start of subtraction 2x7 matrix " << std::endl;
 
@@ -218,17 +234,17 @@ TEST_CASE("SparseMatrix Subtract Rectangular Matrices", "[SparseMatrix][Subtract
     matrixB.print();
 
     // Perform subtraction
-    SparseMatrix::SparseMatrix<int> result = matrixA.subtract(matrixB);
+    ProjectSparseMatrix::sparseMatrix<int> result = matrixA.subtract(matrixB);
 
     std::cout << " Result: " << std::endl;
 
     result.print();
 
-    std::cout << " End of addition test" << std::endl;
+    std::cout << " End of subtraction test" << std::endl;
 
     // Check the result matrix dimensions
-    REQUIRE(result.getRowCount() == 2);
-    REQUIRE(result.getColumnCount() == 7);
+    REQUIRE(result.rowCount() == 2);
+    REQUIRE(result.columnCount() == 7);
 
     // Check specific elements in the result matrix
     REQUIRE(result.get(1, 1) == -13);
@@ -245,4 +261,123 @@ TEST_CASE("SparseMatrix Subtract Rectangular Matrices", "[SparseMatrix][Subtract
     REQUIRE(result.get(2, 5) == 9);
     REQUIRE(result.get(2, 6) == 11);
     REQUIRE(result.get(2, 7) == 13);
+    std::cout << "\n" << std::string(80, '-') << "\n";
+}
+
+TEST_CASE("ProjectSparseMatrix Addition with Blank Spaces", "[ProjectSparseMatrix][Addition]") {
+    std::cout << "Test Case: ProjectSparseMatrix Addition with Blank Spaces\n";
+
+    ProjectSparseMatrix::sparseMatrix<int> matrixA(3, 3);
+    ProjectSparseMatrix::sparseMatrix<int> matrixB(3, 3);
+
+    // Set values for matrixA
+    matrixA.set(1, 1, 1);
+    matrixA.set(2, 1, 2);
+    matrixA.set(3, 1, 3);
+    matrixA.set(4, 2, 1);
+    // Leave matrixA[2][2] blank
+    matrixA.set(6, 2, 3);
+    matrixA.set(7, 3, 1);
+    matrixA.set(8, 3, 2);
+    matrixA.set(9, 3, 3);
+
+    std::cout << "Matrix A:\n";
+    matrixA.print();
+
+    // Set values for matrixB
+    matrixB.set(9, 1, 1);
+    matrixB.set(8, 1, 2);
+    matrixB.set(7, 1, 3);
+    matrixB.set(6, 2, 1);
+    matrixB.set(5, 2, 2);
+    matrixB.set(4, 2, 3);
+    matrixB.set(3, 3, 1);
+    // Leave matrixB[3][2] and matrixB[3][3] blank
+    //matrixB.set(1, 3, 3);
+
+    std::cout << "Matrix B:\n";
+    matrixB.print();
+
+    ProjectSparseMatrix::sparseMatrix<int> result = matrixA.add(matrixB);
+
+    std::cout << "Result Matrix:\n";
+    result.print();
+
+    // Check the result matrix dimensions
+    REQUIRE(result.rowCount() == 3);
+    REQUIRE(result.columnCount() == 3);
+
+    // Check specific elements in the result matrix
+    REQUIRE(result.get(1, 1) == 10);
+    REQUIRE(result.get(1, 2) == 10);
+    REQUIRE(result.get(1, 3) == 10);
+    REQUIRE(result.get(2, 1) == 10);
+    // Check if the blank space in matrixA was handled correctly
+    REQUIRE(result.get(2, 2) == 5);
+    REQUIRE(result.get(2, 3) == 10);
+    REQUIRE(result.get(3, 1) == 10);
+    // Check if the blank spaces in matrixB were handled correctly
+    REQUIRE(result.get(3, 2) == 8);
+    REQUIRE(result.get(3, 3) == 9);
+
+    std::cout << "Test Case Completed.\n";
+    std::cout << "\n" << std::string(120, '-') << "\n";
+}
+
+TEST_CASE("ProjectSparseMatrix Create Big Sparse Matrix", "[ProjectSparseMatrix][Create]") {
+    std::cout << "Creating a big sparse matrix with 6 random values:\n";
+
+    ProjectSparseMatrix::sparseMatrix<int> bigSparseMatrix(8, 8);
+
+    // Set values at random positions
+    bigSparseMatrix.set(1, 2, 3);
+    bigSparseMatrix.set(2, 4, 6);
+    bigSparseMatrix.set(3, 1, 8);
+    bigSparseMatrix.set(4, 7, 2);
+    bigSparseMatrix.set(5, 5, 5);
+    bigSparseMatrix.set(6, 8, 1);
+
+    // Print the big sparse matrix
+    bigSparseMatrix.print();
+
+    // Check the values
+    REQUIRE(bigSparseMatrix.get(2, 3) == 1);
+    REQUIRE(bigSparseMatrix.get(4, 6) == 2);
+    REQUIRE(bigSparseMatrix.get(1, 8) == 3);
+    REQUIRE(bigSparseMatrix.get(7, 2) == 4);
+    REQUIRE(bigSparseMatrix.get(5, 5) == 5);
+    REQUIRE(bigSparseMatrix.get(8, 1) == 6);
+
+    std::cout << "\n" << std::string(120, '-') << "\n";
+}
+
+TEST_CASE("ProjectSparseMatrix Complex Operations", "[ProjectSparseMatrix][Complex]") {
+    std::cout << "Initializing a 10x10 matrix:\n";
+    ProjectSparseMatrix::sparseMatrix<int> complexMatrix(10, 10);
+    complexMatrix.print();
+
+    std::cout << "\nAdding values to random positions:\n";
+    complexMatrix.set(42, 3, 5);
+    complexMatrix.set(23, 7, 2);
+    complexMatrix.set(15, 9, 8);
+    complexMatrix.print();
+
+    std::cout << "\nAdding 5 to some existing values:\n";
+    complexMatrix.set(complexMatrix.get(3, 5) + 5, 3, 5);
+    complexMatrix.set(complexMatrix.get(7, 2) + 5, 7, 2);
+    complexMatrix.set(complexMatrix.get(9, 8) + 5, 9, 8);
+    complexMatrix.print();
+
+    std::cout << "\nSubtracting 8 from values at (3, 5) and (9, 8):\n";
+    complexMatrix.set(complexMatrix.get(3, 5) - 8, 3, 5);
+    complexMatrix.set(complexMatrix.get(9, 8) - 8, 9, 8);
+    complexMatrix.print();
+
+    std::cout << "\nAdding more random values to different positions:\n";
+    complexMatrix.set(30, 2, 6);
+    complexMatrix.set(18, 5, 3);
+    complexMatrix.set(25, 8, 7);
+    complexMatrix.print();
+
+    std::cout << "\n" << std::string(120, '-') << "\n";
 }

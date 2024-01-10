@@ -145,7 +145,7 @@
 		},
 		{
 			"backtrace" : 1,
-			"path" : "include/3_Datastructures/SparseMatrix.h",
+			"path" : "include/3_Datastructures/sparseMatrix.h",
 			"sourceGroupIndex" : 1
 		},
 		{

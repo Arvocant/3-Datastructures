@@ -4,7 +4,7 @@ project(3_Datastructures)
 set(CMAKE_CXX_STANDARD 23)
 
 add_library(MatrixLib STATIC
-        "include/3_Datastructures/SparseMatrix.h"
+        "include/3_Datastructures/sparseMatrix.h"
         "src/SparseMatrix.cpp"
 )
 
@@ -13,7 +13,7 @@ target_include_directories(MatrixLib PRIVATE "include/")
 # Add the executable
 add_executable(TestSuite
         "test/TestSparseMatrix.cpp"
-        "include/3_Datastructures/SparseMatrix.h"
+        "include/3_Datastructures/sparseMatrix.h"
         test/main.cpp
         # Include the header files
 )
