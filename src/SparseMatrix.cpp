@@ -5,21 +5,21 @@
 
 namespace ProjectSparseMatrix{
 
-    ///Initializing a new sparseMatrix
+    //Initializing a new sparseMatrix
     template<typename T>
-    sparseMatrix<T>::sparseMatrix(size_t n)
+    sparseMatrix<T>::sparseMatrix(size_t n) //Make a square matrix
     {
         this->construct(n,n);
     }
 
     template<typename T>
-    sparseMatrix<T>::sparseMatrix(size_t rows, size_t columns)
+    sparseMatrix<T>::sparseMatrix(size_t rows, size_t columns) //Make a rectangular matrix
     {
         this->construct(rows, columns);
     }
 
     template<typename T>
-    sparseMatrix<T>::sparseMatrix(){
+    sparseMatrix<T>::sparseMatrix(){ //Delete a matrix
         this->destruct();
     }
 
@@ -33,7 +33,7 @@ namespace ProjectSparseMatrix{
         this->m = row;
         this->n = column;
 
-        //Init new Matrix row
+        //Initialize the new Matrix row
         values = NULL;
         rows = new std::vector<size_t>(row+1, 1);
         columns = NULL;
@@ -156,7 +156,7 @@ namespace ProjectSparseMatrix{
         }
     }
 
-    ///Math functions
+    //Math functions
     template<typename T>
     sparseMatrix<T> sparseMatrix<T>::multiply(const sparseMatrix<T> &matrixToMultiply) const {
         if (this->n != matrixToMultiply.rowCount()) {
@@ -216,36 +216,6 @@ namespace ProjectSparseMatrix{
             }
         }
         return result;
-    }
-
-    ///Friend functions
-    template<typename U>
-    bool operator==(const sparseMatrix<U> &valA, const sparseMatrix<U> &valB) {
-        bool valuesEqual;
-        if (valA.values == nullptr && valB.values == nullptr)
-            valuesEqual = true;
-        else if (valA.values != nullptr && valB.values)
-            valuesEqual = std::equal(valA.values->begin(), valA.values->end(), valB.values->begin());
-
-        // Check if both matrices have either NULL columns or columns with a value that are equal
-        bool columnsEqual;
-        if (valA.columns == nullptr && valB.columns == nullptr) {
-            columnsEqual = true;
-        } else if (valA.columns != nullptr && valB.columns != nullptr) {
-            columnsEqual = std::equal(valA.columns->begin(), valA.columns->end(), valB.columns->begin());
-        } else {
-            columnsEqual = false;
-        }
-
-        // Check if row vectors are equal
-        bool rowsEqual = (*(valA.rows) == *(valB.rows));
-
-        return valuesEqual && columnsEqual && rowsEqual;
-    }
-
-    template<typename U>
-    bool operator!=(const sparseMatrix<U> &valA, const sparseMatrix<U> &valB) {
-        return !(valA == valB);
     }
 
     template<typename T>
@@ -327,12 +297,6 @@ namespace ProjectSparseMatrix{
 
     template
     sparseMatrix<int> sparseMatrix<int>::subtract(const sparseMatrix<int> & m) const;
-
-    template
-    bool operator==(const sparseMatrix<int> &valA, const sparseMatrix<int> &valB);
-
-    template
-    bool operator!=(const sparseMatrix<int> &valA, const sparseMatrix<int> &valB);
 }
 
 int rows[] = {};

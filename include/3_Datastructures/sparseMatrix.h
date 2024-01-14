@@ -36,19 +36,7 @@ namespace ProjectSparseMatrix{
             [[nodiscard]] size_t rowCount() const;
             [[nodiscard]] size_t columnCount() const;
 
-            //Operations
-            template<typename U>
-            friend bool operator == (const sparseMatrix<U> &valA, const sparseMatrix<U> &valB); //We check if the value we want to add is equal to the value in the indice.
-
-            template<typename U>
-            friend bool operator != (const sparseMatrix<U> &valA, const sparseMatrix<U> &valB);
-
-            template<typename U>
-            friend std::ostream & operator << (const sparseMatrix<U> &outputStream, const sparseMatrix<U> &matrix);
-            //friend gives access to private and protected elements of ProjectSparseMatrix a & b;
-            //std::ostream allows chaining of multiple << operations. << = output stream.
-
-            ///Math functions
+            //Math functions
             sparseMatrix<T> multiply(const sparseMatrix<T> & m) const;
             sparseMatrix<T> add(const sparseMatrix<T> & m) const;
             sparseMatrix<T> subtract(const sparseMatrix<T> & m) const;
